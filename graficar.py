@@ -2,53 +2,37 @@
 graficar.py: Contiene funciones para graficar las fronteras de decisión.
 '''
 
-import matplotlib.pyplot as plt
 import numpy as np
-    
-def frontera_decision(ax, w, b, x_range=[-0.5, 1.5]):
-    '''Dibuja la frontera de decisión del perceptrón para visualizarla en el gráfico.'''
+import matplotlib.pyplot as plt
 
-    x1 = np.linspace(x_range[0], x_range[1], 100)  # Generamos una línea hecha de 100 puntos
+def graficar_red(X, y, red, epoca):
+    # Crear malla
+    x_min, x_max = -0.5, 1.5
+    y_min, y_max = -0.5, 1.5
 
-    if w[1] != 0:  # Evitamos división por cero
-        x2 = -(w[0] * x1 + b) / w[1]  # Calculamos x2 usando la ecuación de la recta
-        ax.plot(x1, x2, 'g-', linewidth=2, label='Frontera de decisión')
+    xx, yy = np.meshgrid(np.linspace(x_min, x_max, 100),
+                         np.linspace(y_min, y_max, 100))
 
+    grid = np.c_[xx.ravel(), yy.ravel()]
 
-def visualizar_iteracion(x,w,b,t,epoca,iteracion,titulo=""):
-    '''Visualiza la iteración actual del perceptrón.'''
-    fig, ax = plt.subplots(figsize=(6,6))
+    # Predicciones sobre la malla
+    Z = red.predict(grid)
+    Z = Z.reshape(xx.shape)
 
-    # Dibujamos los ejes y la frontera de decisión
-    ax.axhline(0, color='black', lw=0.5)
-    ax.axvline(0, color='black', lw=0.5)
+    # Graficar frontera
+    plt.contourf(xx, yy, Z, alpha=0.3, cmap='coolwarm')
 
-    # Graficamos las entradas
-    class_0 = x[t.flatten() == 0]
-    class_1 = x[t.flatten() == 1]
+    # Graficar puntos reales
+    class_0 = X[y.flatten() == 0]
+    class_1 = X[y.flatten() == 1]
 
-    ax.scatter(class_0[:, 0], class_0[:, 1], 
-               color='red', marker='s', label='Clase 0')
-    
-    ax.scatter(class_1[:, 0], class_1[:, 1], 
-               color='blue', marker='o', label='Clase 1')
+    plt.scatter(class_0[:, 0], class_0[:, 1], color='red', label='Clase 0')
+    plt.scatter(class_1[:, 0], class_1[:, 1], color='blue', label='Clase 1')
 
-    # Dibujamos la frontera de decisión
-    frontera_decision(ax, w, b, x_range=[0, 8])
+    plt.title(f"Época {epoca}")
+    plt.legend()
+    plt.grid(True)
 
-    # Configuramos el espacio de decisión
-    ax.set_xlim(0, 8)
-    ax.set_ylim(0, 8)
-
-    # Aplicamos estilo al gráfico
-    ax.grid(True, alpha=0.3)
-
-    ax.set_title(f'Época {epoca}, Iteración {iteracion} \n w=[{w[0]:.2f}, {w[1]:.2f}], b={b:.2f}')
-    ax.set_xlabel('x1')
-    ax.set_ylabel('x2')
-    ax.legend()
-
-    plt.tight_layout()
     plt.show(block=False)
     plt.pause(0.5)
     plt.close()
