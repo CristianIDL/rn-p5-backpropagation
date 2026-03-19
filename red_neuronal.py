@@ -21,7 +21,7 @@ class RedNeuronal:
     def sigmoid_deriv(self, x):
         return x * (1 - x)
 
-    # 🔹 Forward
+    # Forward
     def forward(self, X):
         self.z1 = np.dot(X, self.W1) + self.b1
         self.a1 = self.sigmoid(self.z1)
@@ -31,7 +31,7 @@ class RedNeuronal:
         
         return self.a2
 
-    # 🔹 Backpropagation
+    # Backpropagation
     def backward(self, X, y, output):
         error = y - output
         
@@ -47,7 +47,7 @@ class RedNeuronal:
         self.W1 += X.T.dot(d_hidden) * self.lr
         self.b1 += np.sum(d_hidden, axis=0) * self.lr
 
-    def train(self, X, y, epochs=1000):
+    def train(self, X, y, epochs=1000, graficar=False):
         errores = []
         
         for i in range(epochs):
@@ -59,7 +59,12 @@ class RedNeuronal:
             
             if i % 100 == 0:
                 print(f"Época {i}, Error: {error}")
-        
+
+            # 🔥 Graficar cada cierto número de épocas
+            if graficar and i % 500 == 0:
+                from graficar import graficar_red
+                graficar_red(X, y, self, i)
+    
         return errores
 
     def predict(self, X):

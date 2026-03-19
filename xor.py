@@ -15,7 +15,7 @@ y = np.array([[0],
               [0]])
 
 red = RedNeuronal(2, 2, 1, lr=0.5)
-errores = red.train(X, y, epochs=5000)
+errores = red.train(X, y, epochs=5000, graficar=True)
 
 print("Predicciones:")
 print(red.predict(X))
